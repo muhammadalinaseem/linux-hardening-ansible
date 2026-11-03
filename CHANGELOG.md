@@ -22,3 +22,4 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 - Kernel network parameters through `/etc/sysctl.d`
 - Molecule tests on Debian 12, Ubuntu 24.04 and Rocky Linux 9, including an idempotence check
 - CI: yamllint, ansible-lint, syntax check, gitleaks and Molecule on every push
+- `molecule/default/requirements.yml` with the `community.docker` and `ansible.posix` collections used by the Molecule Docker driver

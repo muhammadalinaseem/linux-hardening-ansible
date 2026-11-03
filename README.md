@@ -87,6 +87,7 @@ Tests use [Molecule](https://ansible.readthedocs.io/projects/molecule/) with Doc
 ```bash
 python3 -m venv .venv && . .venv/bin/activate
 pip install ansible-core ansible-lint yamllint molecule "molecule-plugins[docker]" docker
+ansible-galaxy collection install -r molecule/default/requirements.yml
 
 yamllint . && ansible-lint
 MOLECULE_DISTRO=debian12    molecule test

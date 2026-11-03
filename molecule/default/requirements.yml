@@ -1,0 +1,8 @@
+---
+# Collections needed only for testing with Molecule. The role itself uses
+# ansible.builtin modules only.
+collections:
+  - name: community.docker
+    version: ">=3.10.0"
+  - name: ansible.posix
+    version: ">=1.5.0"

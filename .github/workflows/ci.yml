@@ -53,7 +53,9 @@ jobs:
         with:
           python-version: "3.12"
       - name: Install Molecule
-        run: pip install ansible-core molecule "molecule-plugins[docker]" docker
+        run: |
+          pip install ansible-core molecule "molecule-plugins[docker]" docker
+          ansible-galaxy collection install -r molecule/default/requirements.yml
       - name: Run Molecule
         run: molecule test
         env:
