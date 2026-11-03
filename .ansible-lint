@@ -1,0 +1,7 @@
+---
+profile: production
+exclude_paths:
+  - .github/
+  - molecule/default/molecule.yml
+skip_list:
+  - var-naming[no-role-prefix]

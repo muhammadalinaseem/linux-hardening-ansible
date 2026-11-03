@@ -1,0 +1,93 @@
+---
+# Every feature can be switched off on its own, so you can roll the role
+# out in stages: enable one area, observe, then enable the next.
+
+# --- Safety guard -----------------------------------------------------------
+# Refuse to disable SSH password login unless the user Ansible connects as
+# already has an authorized_keys file. Prevents locking yourself out.
+hardening_ssh_require_authorized_keys: true
+# The user whose key is checked. With become, Ansible facts describe root,
+# so this defaults to the login user (ansible_user or SUDO_USER).
+hardening_ssh_key_check_user: "{{ ansible_user | default(ansible_env.SUDO_USER | default(ansible_user_id)) }}"
+
+# --- SSH --------------------------------------------------------------------
+hardening_ssh_enabled: true
+hardening_ssh_port: 22
+hardening_ssh_permit_root_login: "no"
+hardening_ssh_password_authentication: false
+hardening_ssh_max_auth_tries: 3
+hardening_ssh_login_grace_time: 30
+hardening_ssh_client_alive_interval: 300
+hardening_ssh_client_alive_count_max: 2
+hardening_ssh_x11_forwarding: false
+hardening_ssh_allow_tcp_forwarding: "no"
+# Optional: restrict SSH to these users or groups (empty list = no restriction)
+hardening_ssh_allow_users: []
+hardening_ssh_allow_groups: []
+hardening_ssh_kex_algorithms:
+  - sntrup761x25519-sha512@openssh.com
+  - curve25519-sha256
+  - curve25519-sha256@libssh.org
+  - diffie-hellman-group16-sha512
+  - diffie-hellman-group18-sha512
+hardening_ssh_ciphers:
+  - chacha20-poly1305@openssh.com
+  - aes256-gcm@openssh.com
+  - aes128-gcm@openssh.com
+  - aes256-ctr
+  - aes192-ctr
+  - aes128-ctr
+hardening_ssh_macs:
+  - hmac-sha2-512-etm@openssh.com
+  - hmac-sha2-256-etm@openssh.com
+  - umac-128-etm@openssh.com
+
+# --- fail2ban ---------------------------------------------------------------
+hardening_fail2ban_enabled: true
+hardening_fail2ban_bantime: 1h
+hardening_fail2ban_findtime: 10m
+hardening_fail2ban_maxretry: 5
+# Repeat offenders get longer bans each time, up to the maximum.
+hardening_fail2ban_bantime_increment: true
+hardening_fail2ban_bantime_maxtime: 1w
+# Addresses that must never be banned (use your own management ranges).
+hardening_fail2ban_banaction: nftables-multiport
+hardening_fail2ban_banaction_allports: nftables-allports
+hardening_fail2ban_ignoreip:
+  - 127.0.0.1/8
+  - ::1
+
+# --- auditd -----------------------------------------------------------------
+hardening_auditd_enabled: true
+# Containers cannot load audit rules into the kernel; set false there.
+hardening_auditd_load_rules: true
+
+# --- AIDE (file integrity) --------------------------------------------------
+hardening_aide_enabled: true
+# Building the first database takes several minutes on a real server.
+hardening_aide_init: true
+
+# --- Automatic security updates ---------------------------------------------
+hardening_auto_updates_enabled: true
+# Debian/Ubuntu: reboot automatically if an update needs it (off by default)
+hardening_auto_updates_reboot: false
+hardening_auto_updates_reboot_time: "03:30"
+
+# --- Kernel network parameters (sysctl) -------------------------------------
+# Containers share the host kernel; set false there.
+hardening_sysctl_enabled: true
+hardening_sysctl_settings:
+  net.ipv4.conf.all.accept_redirects: 0
+  net.ipv4.conf.default.accept_redirects: 0
+  net.ipv4.conf.all.send_redirects: 0
+  net.ipv4.conf.all.accept_source_route: 0
+  net.ipv4.conf.all.rp_filter: 1
+  net.ipv4.conf.all.log_martians: 1
+  net.ipv4.icmp_echo_ignore_broadcasts: 1
+  net.ipv4.tcp_syncookies: 1
+  net.ipv6.conf.all.accept_redirects: 0
+  net.ipv6.conf.default.accept_redirects: 0
+  kernel.kptr_restrict: 2
+  kernel.dmesg_restrict: 1
+  fs.protected_hardlinks: 1
+  fs.protected_symlinks: 1

@@ -1,0 +1,22 @@
+---
+- name: Prepare
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Refresh the apt cache (Debian/Ubuntu)
+      ansible.builtin.raw: test -x /usr/bin/apt-get && apt-get update -qq || true
+      changed_when: false
+
+    # The role refuses to disable password login unless a key exists.
+    # This dummy public key lets the safety check pass in the test container.
+    - name: Create root's .ssh directory
+      ansible.builtin.file:
+        path: /root/.ssh
+        state: directory
+        mode: "0700"
+
+    - name: Add a dummy public key
+      ansible.builtin.copy:
+        dest: /root/.ssh/authorized_keys
+        content: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEXAMPLEEXAMPLEEXAMPLEEXAMPLEEXAMPLEEXAMPLE molecule-test\n"
+        mode: "0600"

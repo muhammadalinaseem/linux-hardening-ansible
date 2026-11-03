@@ -1,0 +1,25 @@
+---
+galaxy_info:
+  role_name: linux_hardening
+  namespace: muhammadalinaseem
+  author: Muhammad Ali Naseem
+  description: Staged Linux hardening for Debian, Ubuntu and Rocky Linux
+  license: MIT
+  min_ansible_version: "2.15"
+  platforms:
+    - name: Debian
+      versions:
+        - bookworm
+    - name: Ubuntu
+      versions:
+        - noble
+    - name: EL
+      versions:
+        - "9"
+  galaxy_tags:
+    - security
+    - hardening
+    - ssh
+    - fail2ban
+    - auditd
+dependencies: []

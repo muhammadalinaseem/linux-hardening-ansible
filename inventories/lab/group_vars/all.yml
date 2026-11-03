@@ -1,0 +1,10 @@
+---
+# Example overrides for a home lab.
+hardening_fail2ban_ignoreip:
+  - 127.0.0.1/8
+  - ::1
+  - 192.0.2.0/24
+# Restrict SSH to an admin group once you've confirmed your user is in it.
+# Debian/Ubuntu commonly use "sudo"; RHEL-family systems use "wheel".
+# hardening_ssh_allow_groups:
+#   - sudo

@@ -1,0 +1,27 @@
+# {{ ansible_managed }}
+# Hardened SSH settings from the linux_hardening role.
+
+Port {{ hardening_ssh_port }}
+PermitRootLogin {{ hardening_ssh_permit_root_login }}
+PasswordAuthentication {{ 'yes' if hardening_ssh_password_authentication | bool else 'no' }}
+KbdInteractiveAuthentication no
+PubkeyAuthentication yes
+PermitEmptyPasswords no
+MaxAuthTries {{ hardening_ssh_max_auth_tries }}
+LoginGraceTime {{ hardening_ssh_login_grace_time }}
+ClientAliveInterval {{ hardening_ssh_client_alive_interval }}
+ClientAliveCountMax {{ hardening_ssh_client_alive_count_max }}
+X11Forwarding {{ 'yes' if hardening_ssh_x11_forwarding | bool else 'no' }}
+AllowTcpForwarding {{ hardening_ssh_allow_tcp_forwarding }}
+AllowAgentForwarding no
+LogLevel VERBOSE
+{% if hardening_ssh_allow_users | length > 0 %}
+AllowUsers {{ hardening_ssh_allow_users | join(' ') }}
+{% endif %}
+{% if hardening_ssh_allow_groups | length > 0 %}
+AllowGroups {{ hardening_ssh_allow_groups | join(' ') }}
+{% endif %}
+
+KexAlgorithms {{ hardening_ssh_kex_algorithms | join(',') }}
+Ciphers {{ hardening_ssh_ciphers | join(',') }}
+MACs {{ hardening_ssh_macs | join(',') }}

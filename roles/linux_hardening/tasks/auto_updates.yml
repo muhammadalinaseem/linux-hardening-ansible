@@ -1,0 +1,43 @@
+---
+- name: Auto-updates | Install packages
+  ansible.builtin.package:
+    name: "{{ hardening_auto_updates_packages }}"
+    state: present
+
+- name: Auto-updates | Turn on unattended upgrades (Debian/Ubuntu)
+  ansible.builtin.template:
+    src: 20auto-upgrades.j2
+    dest: /etc/apt/apt.conf.d/20auto-upgrades
+    owner: root
+    group: root
+    mode: "0644"
+  when: ansible_facts['os_family'] == 'Debian'
+
+- name: Auto-updates | Set reboot behaviour (Debian/Ubuntu)
+  ansible.builtin.template:
+    src: 52unattended-upgrades-hardening.j2
+    dest: /etc/apt/apt.conf.d/52unattended-upgrades-hardening
+    owner: root
+    group: root
+    mode: "0644"
+  when: ansible_facts['os_family'] == 'Debian'
+
+- name: Auto-updates | Apply security updates only (RHEL family)
+  ansible.builtin.lineinfile:
+    path: /etc/dnf/automatic.conf
+    regexp: "^{{ item.key }}\\s*="
+    line: "{{ item.key }} = {{ item.value }}"
+    insertafter: '^\[commands\]'
+  loop:
+    - { key: upgrade_type, value: security }
+    - { key: apply_updates, value: "yes" }
+  loop_control:
+    label: "{{ item.key }}"
+  when: ansible_facts['os_family'] == 'RedHat'
+
+- name: Auto-updates | Enable the dnf-automatic timer (RHEL family)
+  ansible.builtin.service:
+    name: dnf-automatic.timer
+    enabled: true
+    state: started
+  when: ansible_facts['os_family'] == 'RedHat'

@@ -1,0 +1,14 @@
+---
+hardening_ssh_service: sshd
+hardening_ssh_packages:
+  - openssh-server
+hardening_fail2ban_packages:
+  - fail2ban-server
+  - python3-systemd
+  - nftables
+hardening_auditd_packages:
+  - audit
+hardening_aide_packages:
+  - aide
+hardening_auto_updates_packages:
+  - dnf-automatic

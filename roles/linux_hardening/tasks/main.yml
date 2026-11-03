@@ -1,0 +1,34 @@
+---
+- name: Load variables for this OS family
+  ansible.builtin.include_vars: "{{ ansible_facts['os_family'] }}.yml"
+
+- name: Check this platform is supported
+  ansible.builtin.assert:
+    that:
+      - ansible_facts['os_family'] in ['Debian', 'RedHat']
+    fail_msg: "linux_hardening supports Debian, Ubuntu and RHEL-family systems only."
+    quiet: true
+
+- name: Harden SSH
+  ansible.builtin.include_tasks: ssh.yml
+  when: hardening_ssh_enabled | bool
+
+- name: Configure fail2ban
+  ansible.builtin.include_tasks: fail2ban.yml
+  when: hardening_fail2ban_enabled | bool
+
+- name: Configure auditd
+  ansible.builtin.include_tasks: auditd.yml
+  when: hardening_auditd_enabled | bool
+
+- name: Configure AIDE
+  ansible.builtin.include_tasks: aide.yml
+  when: hardening_aide_enabled | bool
+
+- name: Configure automatic security updates
+  ansible.builtin.include_tasks: auto_updates.yml
+  when: hardening_auto_updates_enabled | bool
+
+- name: Apply kernel network parameters
+  ansible.builtin.include_tasks: sysctl.yml
+  when: hardening_sysctl_enabled | bool

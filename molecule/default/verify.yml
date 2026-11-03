@@ -1,0 +1,57 @@
+---
+- name: Verify
+  hosts: all
+  become: true
+  gather_facts: true
+  tasks:
+    - name: Read the effective sshd configuration
+      ansible.builtin.command: /usr/sbin/sshd -T
+      register: sshd_effective
+      changed_when: false
+
+    - name: Check key SSH settings are in force
+      ansible.builtin.assert:
+        that:
+          - "'permitrootlogin no' in sshd_effective.stdout_lines"
+          - "'passwordauthentication no' in sshd_effective.stdout_lines"
+          - "'kbdinteractiveauthentication no' in sshd_effective.stdout_lines"
+          - "'maxauthtries 3' in sshd_effective.stdout_lines"
+          - "'x11forwarding no' in sshd_effective.stdout_lines"
+        fail_msg: "sshd is not running with the hardened settings"
+
+    - name: Check no weak ciphers are offered
+      ansible.builtin.assert:
+        that:
+          - sshd_effective.stdout is not search('3des-cbc')
+          - sshd_effective.stdout is not search('aes128-cbc')
+          - sshd_effective.stdout is not search('hmac-sha1')
+
+    - name: Ask fail2ban for the sshd jail
+      ansible.builtin.command: fail2ban-client status sshd
+      register: f2b_status
+      changed_when: false
+
+    - name: Check the sshd jail is active
+      ansible.builtin.assert:
+        that:
+          - "'Status for the jail: sshd' in f2b_status.stdout"
+
+    - name: Check audit rules, AIDE and automatic updates are in place
+      ansible.builtin.stat:
+        path: "{{ item }}"
+      register: hardening_files
+      loop: >-
+        {{ ['/etc/audit/rules.d/50-hardening.rules']
+           + (['/etc/apt/apt.conf.d/20auto-upgrades', '/usr/bin/aide']
+              if ansible_facts['os_family'] == 'Debian'
+              else ['/etc/dnf/automatic.conf', '/usr/sbin/aide']) }}
+
+    - name: Assert those files exist
+      ansible.builtin.assert:
+        that:
+          - item.stat.exists
+        fail_msg: "Missing {{ item.item }}"
+        quiet: true
+      loop: "{{ hardening_files.results }}"
+      loop_control:
+        label: "{{ item.item }}"

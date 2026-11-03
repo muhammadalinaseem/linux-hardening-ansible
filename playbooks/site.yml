@@ -1,0 +1,8 @@
+---
+# Example: harden every host in the inventory.
+# Run in stages: first with --check --diff, then for real on one host.
+- name: Harden Linux servers
+  hosts: all
+  become: true
+  roles:
+    - role: linux_hardening

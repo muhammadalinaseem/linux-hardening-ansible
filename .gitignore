@@ -1,0 +1,14 @@
+*.retry
+.venv/
+__pycache__/
+.cache/
+*.log
+# Never commit secrets or real inventories
+*.vault
+vault_pass*
+.vault_pass*
+inventories/private/
+*.pem
+*.key
+id_*
+!id_*.pub

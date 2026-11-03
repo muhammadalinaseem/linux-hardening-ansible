@@ -1,0 +1,16 @@
+---
+hardening_ssh_service: ssh
+hardening_ssh_packages:
+  - openssh-server
+hardening_fail2ban_packages:
+  - fail2ban
+  - python3-systemd
+  - nftables
+hardening_auditd_packages:
+  - auditd
+hardening_aide_packages:
+  - aide
+  - aide-common
+hardening_auto_updates_packages:
+  - unattended-upgrades
+  - apt-listchanges
