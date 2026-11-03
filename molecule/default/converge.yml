@@ -1,6 +1,8 @@
 ---
 - name: Converge
   hosts: all
-  become: true
+  # Molecule connects to the test containers as root, so no privilege
+  # escalation is needed. (sudo fails in the Rocky Linux 9 test image.)
+  become: false
   roles:
     - role: linux_hardening
