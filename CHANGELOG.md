@@ -4,6 +4,9 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 
 ## [Unreleased]
 
+### Changed
+- CI actions updated to their Node 24 releases: `actions/checkout@v7`, `actions/setup-python@v7`, `gitleaks/gitleaks-action@v3`
+
 ### Planned for 1.0.0
 - Host firewall (ufw on Debian/Ubuntu, firewalld on RHEL family), off by default
 - Scheduled AIDE checks with a systemd timer
