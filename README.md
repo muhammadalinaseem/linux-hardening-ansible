@@ -99,12 +99,18 @@ The verify step reads the **effective** SSH configuration with `sshd -T` (not ju
 
 ## Results from my lab
 
-Lynis hardening index on a fresh minimal install, before and after the role:
+Lynis hardening index on fresh official cloud images, before and after one run of the role with default settings (commit `4a9c35a`, measured 4 November 2026):
 
-| System | Before | After |
-|---|---|---|
-| Debian 12 | _to be added_ | _to be added_ |
-| Ubuntu 24.04 | _to be added_ | _to be added_ |
+| System | Lynis | Before | After | Change | Suggestions | Warnings |
+|---|---|---|---|---|---|---|
+| Debian 12 (cloud image) | 3.0.8 | 64 | 74 | +10 | 51 → 44 | 3 → 3 |
+| Ubuntu 24.04 (cloud image) | 3.0.9 | 59 | 69 | +10 | 47 → 41 | 2 → 3 |
+
+- A second run of the role changed nothing on either host (`changed=0`). Afterwards, SSH offered public-key login only.
+- Remaining warnings: pending updates on the fresh images (the role's automatic security updates install them), no firewall rules (an optional firewall is planned for v1.0.0) and, on Debian, Lynis 3.0.8 not reading the newer `.sources` repository format.
+- **Known issue in v0.1.0:** on Ubuntu 24.04, installing AIDE also installs Postfix through package recommends, listening on port 25 on all interfaces (the extra warning, Lynis MAIL-8818). It will be fixed in v1.0.0. Until then, run `sudo apt-get purge postfix bsd-mailx` if you don't need local mail. AIDE keeps working.
+
+Lynis scores are a guide, not a compliance result.
 
 ## Limitations
 
