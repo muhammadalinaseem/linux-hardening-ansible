@@ -1,0 +1,4 @@
+# Count the YAML (Ansible tasks, vars, Molecule) so GitHub shows the
+# repository language as YAML instead of Jinja (the templates).
+*.yml linguist-detectable
+*.yaml linguist-detectable

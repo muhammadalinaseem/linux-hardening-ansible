@@ -1,8 +1,18 @@
 ---
-- name: AIDE | Install packages
+# aide-common recommends a mail client, which pulls in a mail server
+# (Postfix on Ubuntu, listening on port 25). Install without recommends.
+- name: AIDE | Install packages without recommended extras (Debian/Ubuntu)
+  ansible.builtin.apt:
+    name: "{{ hardening_aide_packages }}"
+    state: present
+    install_recommends: false
+  when: ansible_facts['os_family'] == 'Debian'
+
+- name: AIDE | Install packages (RHEL family)
   ansible.builtin.package:
     name: "{{ hardening_aide_packages }}"
     state: present
+  when: ansible_facts['os_family'] == 'RedHat'
 
 - name: AIDE | Initialise the database (Debian/Ubuntu)
   ansible.builtin.command: aideinit --yes --force
