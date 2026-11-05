@@ -108,7 +108,7 @@ Lynis hardening index on fresh official cloud images, before and after one run o
 
 - A second run of the role changed nothing on either host (`changed=0`). Afterwards, SSH offered public-key login only.
 - Remaining warnings: pending updates on the fresh images (the role's automatic security updates install them), no firewall rules (an optional firewall is planned for v1.0.0) and, on Debian, Lynis 3.0.8 not reading the newer `.sources` repository format.
-- **Known issue in v0.1.0:** on Ubuntu 24.04, installing AIDE also installs Postfix through package recommends, listening on port 25 on all interfaces (the extra warning, Lynis MAIL-8818). It will be fixed in v1.0.0. Until then, run `sudo apt-get purge postfix bsd-mailx` if you don't need local mail. AIDE keeps working.
+- **Fixed in v0.1.1:** in v0.1.0, installing AIDE on Ubuntu 24.04 also installed Postfix through package recommends, listening on port 25 on all interfaces (the extra warning, Lynis MAIL-8818). v0.1.1 installs AIDE without recommends, and CI now fails if anything listens on port 25 outside loopback. If you used v0.1.0, see the upgrade note in [CHANGELOG.md](CHANGELOG.md).
 
 Lynis scores are a guide, not a compliance result.
 

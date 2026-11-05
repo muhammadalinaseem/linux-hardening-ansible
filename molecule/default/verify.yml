@@ -57,3 +57,29 @@
       loop: "{{ hardening_files.results }}"
       loop_control:
         label: "{{ item.item }}"
+
+    # Regression test for the v0.1.0 issue: AIDE must not bring in a mail
+    # server listening on the network. Reads /proc, so no extra tools needed.
+    - name: Count TCP port 25 listeners on non-loopback addresses
+      ansible.builtin.command: >-
+        awk '$4 == "0A" && $2 ~ /:0019$/ {split($2, a, ":");
+        if (a[1] != "0100007F" && a[1] != "00000000000000000000000001000000") n++}
+        END {print n+0}' /proc/net/tcp /proc/net/tcp6
+      register: smtp_listeners
+      changed_when: false
+
+    - name: Check nothing listens on port 25 except loopback
+      ansible.builtin.assert:
+        that:
+          - smtp_listeners.stdout | int == 0
+        fail_msg: "Something is listening on port 25 on a network interface"
+
+    - name: Gather installed packages
+      ansible.builtin.package_facts:
+
+    - name: Check AIDE didn't install a mail server (Debian/Ubuntu)
+      ansible.builtin.assert:
+        that:
+          - "'postfix' not in ansible_facts.packages"
+          - "'exim4-daemon-light' not in ansible_facts.packages"
+      when: ansible_facts['os_family'] == 'Debian'
